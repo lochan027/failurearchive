@@ -131,11 +131,15 @@ export async function POST(req: NextRequest) {
       'spam': 'SPAM'
     };
     
+    const mappedFlags = moderationResult.flags.map((flag: string) => 
+      (flagMapping as Record<string, string>)[flag] || flag
+    ) as any;
+    
     await prisma.moderationRecord.create({
       data: {
         failureRecordId: failureRecord.id,
         status: moderationResult.safe ? 'APPROVED' : 'FLAGGED',
-        flags: moderationResult.flags.map((flag: string) => flagMapping[flag] || flag),
+        flags: mappedFlags,
         aiAnalysis: moderationResult.analysis,
         manualReview: !moderationResult.safe,
       },
