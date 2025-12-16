@@ -51,12 +51,28 @@ export default function GalleryPage() {
       });
 
       const response = await fetch(`/api/submissions?${params}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
       const data = await response.json();
       
-      setSubmissions(data.submissions);
-      setTotalPages(data.pagination.totalPages);
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      if (data.submissions && data.pagination) {
+        setSubmissions(data.submissions);
+        setTotalPages(data.pagination.totalPages);
+      } else {
+        setSubmissions([]);
+        setTotalPages(1);
+      }
     } catch (error) {
       console.error('Failed to fetch submissions:', error);
+      setSubmissions([]);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
