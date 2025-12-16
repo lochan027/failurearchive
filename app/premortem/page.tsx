@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useToast } from '@/components/Toast';
 
 interface PreMortemResult {
   relatedFailures: string[];
@@ -17,10 +18,11 @@ export default function PreMortemPage() {
   const [hypothesis, setHypothesis] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<PreMortemResult | null>(null);
+  const { showToast, ToastComponent } = useToast();
 
   const handleAnalyze = async () => {
     if (!idea.trim()) {
-      alert('Please describe your idea');
+      showToast('Please describe your idea', 'error');
       return;
     }
 
@@ -45,7 +47,7 @@ export default function PreMortemPage() {
       setResult(data);
     } catch (error) {
       console.error('Pre-mortem analysis failed:', error);
-      alert(`Failed to analyze: ${error instanceof Error ? error.message : 'Please try again.'}`);
+      showToast(`Failed to analyze: ${error instanceof Error ? error.message : 'Please try again.'}`, 'error');
     } finally {
       setLoading(false);
     }
@@ -235,6 +237,7 @@ export default function PreMortemPage() {
           </div>
         </div>
       )}
+      {ToastComponent}
     </div>
   );
 }

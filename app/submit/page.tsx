@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { FailureRecordType, IdentityMode, FailurePoint, EvidenceLevel } from '@/lib/db-types';
+import { useToast } from '@/components/Toast';
 
 export default function SubmitPage() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function SubmitPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const { showToast, ToastComponent } = useToast();
 
   const [formData, setFormData] = useState({
     type: 'TECHNICAL_PROJECT' as FailureRecordType,
@@ -113,7 +115,10 @@ export default function SubmitPage() {
         throw new Error(data.error || 'Failed to submit');
       }
 
-      router.push(`/submission/${data.id}`);
+      showToast('Failure record submitted successfully!', 'success');
+      setTimeout(() => {
+        router.push(`/submission/${data.id}`);
+      }, 1500);
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
@@ -613,6 +618,7 @@ export default function SubmitPage() {
           </button>
         </div>
       </form>
+      {ToastComponent}
     </div>
   );
 }

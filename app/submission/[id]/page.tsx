@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ReuseType } from '@/lib/db-types';
+import { useToast } from '@/components/Toast';
 
 export default function SubmissionPage() {
   const params = useParams();
@@ -14,6 +15,7 @@ export default function SubmissionPage() {
   const [showReuseForm, setShowReuseForm] = useState(false);
   const [reuseType, setReuseType] = useState<ReuseType>(ReuseType.REUSED);
   const [privateNotes, setPrivateNotes] = useState('');
+  const { showToast, ToastComponent } = useToast();
 
   useEffect(() => {
     fetchSubmission();
@@ -46,11 +48,12 @@ export default function SubmissionPage() {
       if (response.ok) {
         setShowReuseForm(false);
         setPrivateNotes('');
-        alert('Reuse recorded successfully!');
+        showToast('Reuse recorded successfully!', 'success');
         fetchSubmission();
       }
     } catch (error) {
       console.error('Failed to record reuse:', error);
+      showToast('Failed to record reuse', 'error');
     }
   };
 
@@ -301,6 +304,7 @@ export default function SubmissionPage() {
           </div>
         </section>
       </div>
+      {ToastComponent}
     </div>
   );
 }
